@@ -26,8 +26,8 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 public class SimpleVideoStream extends Activity implements
-MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
-MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
+		MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
+		MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 	private String TAG = getClass().getSimpleName();
 	private VideoView mVideoView = null;
 	private MediaPlayer mMediaPlayer = null;
@@ -66,13 +66,13 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 			pipButton.setBackgroundColor(Color.BLACK);
 			pipButton.getBackground().setAlpha(128);
 			pipButton.setTextColor(Color.WHITE);
-			pipButton.setTextSize(18);
-			pipButton.setPadding(10, 10, 10, 10);
+			pipButton.setTextSize(24);
+			pipButton.setPadding(50, 50, 50, 50);
 			RelativeLayout.LayoutParams pipParams = new RelativeLayout.LayoutParams(
 					RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 			pipParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
 			pipParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-			pipParams.setMargins(200, 0, 0, 0);
+			pipParams.setMargins(60, 50, 30, 30);
 			pipButton.setLayoutParams(pipParams);
 			pipButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -91,10 +91,11 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 			close.getBackground().setAlpha(128);
 			close.setTextColor(Color.WHITE);
 			close.setTextSize(24);
-			close.setPadding(10, 10, 10, 10);
+			close.setPadding(50, 50, 50, 50);
 			RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 			closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
 			closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+			closeLayoutParams.setMargins(30, 50, 60, 30);
 			close.setLayoutParams(closeLayoutParams);
 			close.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
@@ -197,6 +198,9 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 	}
 
 	private void wrapItUp(int resultCode, String message) {
+		if (mMediaController != null) {
+			mMediaController.hide();
+		}
 		Log.d(TAG, "wrapItUp was triggered.");
 		Intent intent = new Intent();
 		intent.putExtra("message", message);
@@ -217,18 +221,18 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 		sb.append("MediaPlayer Error: ");
 		switch (what) {
 			case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-			sb.append("Not Valid for Progressive Playback");
-			break;
+				sb.append("Not Valid for Progressive Playback");
+				break;
 			case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-			sb.append("Server Died");
-			break;
+				sb.append("Server Died");
+				break;
 			case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-			sb.append("Unknown");
-			break;
+				sb.append("Unknown");
+				break;
 			default:
-			sb.append(" Non standard (");
-			sb.append(what);
-			sb.append(")");
+				sb.append(" Non standard (");
+				sb.append(what);
+				sb.append(")");
 		}
 		sb.append(" (" + what + ") ");
 		sb.append(extra);
@@ -255,10 +259,37 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 	}
 
 	@Override
+	protected void onPause() {
+		if (mMediaController != null) {
+			mMediaController.hide();
+		}
+		super.onPause();
+	}
+
+	@Override
+	public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+		super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+		if (mMediaController != null) {
+			if (isInPictureInPictureMode) {
+				mMediaController.hide();
+			}
+		}
+	}
+
+	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (mMediaController != null)
+		if (mMediaController != null && !isFinishing()) {
 			mMediaController.show();
+		}
 		return false;
+	}
+
+	@Override
+	protected void onStop() {
+		if (mMediaController != null) {
+			mMediaController.hide();
+		}
+		super.onStop();
 	}
 
 	private class PiPMediaController extends MediaController {
