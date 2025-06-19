@@ -46,6 +46,11 @@ public class SimpleVideoStream extends Activity implements
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		Bundle b = getIntent().getExtras();
+		if (b == null) {
+			Log.e(TAG, "No extras found in Intent, finishing activity");
+			finish();
+			return;
+		}
 		mVideoUrl = b.getString("mediaUrl");
 		mShouldAutoClose = b.getBoolean("shouldAutoClose", true);
 		mControls = b.getBoolean("controls", true);
