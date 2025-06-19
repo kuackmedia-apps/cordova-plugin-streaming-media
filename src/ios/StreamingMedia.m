@@ -209,8 +209,12 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
     // handle orientation
     [self handleOrientation];
 
-    // handle gestures
-    [self handleGestures];
+    // Allow underlying app UI to show in PiP
+    moviePlayer.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    moviePlayer.view.backgroundColor = [UIColor clearColor];
+    if (@available(iOS 11.0, *)) {
+        moviePlayer.contentOverlayView.backgroundColor = [UIColor clearColor];
+    }
 
     [moviePlayer setPlayer:movie];
     [moviePlayer setShowsPlaybackControls:YES];
@@ -414,7 +418,7 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
 }
 
 - (BOOL)playerViewControllerShouldAutomaticallyDismissAtPictureInPictureStart:(AVPlayerViewController *)playerViewController {
-    return NO;
+    return YES;
 }
 
 @end
