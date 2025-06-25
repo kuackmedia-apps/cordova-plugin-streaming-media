@@ -192,7 +192,9 @@ public class SimpleVideoStream extends Activity implements
 
 	private void stop() {
 		Log.d(TAG, "Stopping video.");
-		mVideoView.stopPlayback();
+		if (mVideoView != null) {
+			mVideoView.stopPlayback();
+		}
 	}
 
 	@Override
